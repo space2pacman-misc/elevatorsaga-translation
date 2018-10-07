@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)https://play.elevatorsaga.com/documentation.html -->
+<html data-livestyle-extension="available"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Elevator Saga - Справка и документация по API</title>
+    
+    <link rel="stylesheet" href="files/font-awesome.min.css" type="text/css" media="all">
+    <link href="files/css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="files/style.css" type="text/css" media="all">
+
+    <link rel="stylesheet" href="files/default.css" type="text/css" media="all">
+    <link rel="stylesheet" href="files/solarized_light.css" type="text/css" media="all">
+
+    <script type="text/javascript" src="files/highlight.pack.js.download"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+</head>
+<body>
+    <div class="container" style="width: 960px">
+        <div class="header">
+            <h1>Elevator Saga <em class="emphasis-color">Справка и документация по API</em></h1>
+        </div>
+
+        <div class="help">
+            <h2>Об игре</h2>
+            <p>
+                Это игра программирования!<br>
+                Ваша задача - запрограммировать движение лифтов, написав скрипт в <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide">JavaScript</a>.
+            </p>
+            <p>
+                Цель состоит в том, чтобы эффективно перевозить людей.<br>
+                В зависимости от того, насколько хорошо вы это делаете, вы можете прогрессировать через все более сложные задачи.<br>
+                Только самые лучшие скрипты смогут выполнить все задачи.
+            </p>
+
+            <h2>Как играть</h2>
+            <p>
+                Введите код в окно ввода под игрой, и нажмите кнопку <span class="emphasis-color">Apply</span> чтобы запустить скрипт.<br>
+                Вы можете увеличить или уменьшить скорость времени, нажав кнопку <i class="fa fa-plus emphasis-color"></i> и <i class="fa fa-minus emphasis-color"></i>.
+            </p>
+            <p>
+                Если программа содержит ошибку, можно использовать средства разработчика в веб-браузере для ее отладки.
+                Если вы хотите начать заново, то нажмите кнопку <span class="emphasis-color">Reset</span>. Это вернет стандартный код.<br>
+                Если у вас есть любимый текстовый редактор, такой как <a href="http://www.sublimetext.com/">Sublime Text</a>, не стесняйтесь редактировать код и вставлять его в игровой редактор.<br>
+                Ваш код автоматически сохраняется в локальном хранилище, так что не волнуйтесь - он не исчезнет, если вы случайно закроете браузер.
+            </p>
+            <h2>Основы</h2>
+            <p>
+                Ваш код должен объявлять объект, содержащий по крайней мере дв метода, называемые. <span class="emphasis-color">init</span> и <span class="emphasis-color">update</span>. Вроде этого:
+            </p>
+            <div><pre><code class="hljs javascript">{
+    init: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(elevators, floors)</span> </span>{
+        <span class="hljs-comment">// Вызывается инструкция за инструкцией</span>
+    },
+    update: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(dt, elevators, floors)</span> </span>{
+        <span class="hljs-comment">// Вызывается на каждый вызов инструкции в методе init</span>
+        <span class="hljs-comment">// Пример: вызван elevators.goToFloor(1) в init</span>
+        <span class="hljs-comment">// update будет вызван примерно 100 раз в момент перемещения лифта.</span>
+        <span class="hljs-comment">// dt - количество игровых секунд, прошедших с момента последнего вызова update</span>
+    }
+}</code></pre></div>
+            <p>Эти методы будут вызваны игрой во время запуска.<br>
+            Когда начнется игра <span class="emphasis-color">init</span> будет вызываться и последовательно отрабатывать, а <span class="emphasis-color">update</span> будет вызываться неоднократно во время вызова инструкций в <span class="emphasis-color">init</span>.
+            </p>
+            <p>
+                Обычно большую часть кода рекомендуется писать в методе <span class="emphasis-color">init</span>, чтобы настроить прослушивание событий и логику.
+            </p>
+            <h2>Пример кода</h2>
+            <h3>Как управлять лифтом</h3>
+            <dl>
+                <dt><pre><code class="hljs">elevator.goToFloor(1);</code></pre></dt>
+                    <dd>Говорит лифту чтобы он поднялся на 1 этаж после выполнения других задач, если таковые имеются. Обратите внимание, что если лифт уже в очереди то не будет никакого эффекта</dd>
+                <dt><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(elevator.currentFloor() &gt; <span class="hljs-number">2</span>) { ... }</code></pre></dt>
+                    <dd>Вызов currentFloor получает номер этажа, на котором в данный момент находится лифт. Обратите внимание если лифт находится между этажами то возвращается округленное число и это не означает, что лифт находится в остановленном состоянии.</dd>
+            </dl>
+            <h3>Прослушивание событий</h3>
+            <p>Можно прослушивать события, например, при остановке на этаже или нажатии кнопки.</p>
+            <dl>
+                <dt><pre><code class="hljs javascript">elevator.on(<span class="hljs-string">"idle"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ elevator.goToFloor(<span class="hljs-number">0</span>); });</code></pre></dt>
+                    <dd>Функция callback вызывается, когда очередь лифта очищена и лифт ничего не делает. В этом примере мы говорим ему перейти на этаж 0.</dd>
+                <dt><pre><code class="hljs javascript">elevator.on(<span class="hljs-string">"floor_button_pressed"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(floorNum)</span> </span>{ ... } );</code></pre></dt>
+                    <dd>Слушайте событие «floor_button_pressed», которое срабатывает, когда пассажир нажал кнопку внутри лифта. Это указывает на то, что пассажир хочет переместиться на этаж, который попадает в аргумент floorNum.</dd>
+                <dt><pre><code class="hljs javascript">floor.on(<span class="hljs-string">"up_button_pressed"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ ... } );</code></pre></dt>
+                    <dd>Слушайте событие «up_button_pressed», которое срабатывает, когда пассажир нажал кнопку вверх на этаже. Это указывает на то, что пассажир хочет перейти на другой этаж.</dd>
+            </dl>
+
+            <h2 id="docs">API документация</h2>
+            <h3>Объект лифта</h3>
+            <table class="doctable">
+                <thead><tr><th width="150">Свойство</th><th width="90">Тип</th><th width="190">Описание</th><th width="*">Пример</th></tr></thead>
+                <tbody>
+                    <tr><td>goToFloor</td><td>function</td><td><small>Ставит лифт в очередь на указанный этаж. Если вы укажете true в качестве второго аргумента, лифт перейдет непосредственно на этот этаж, а затем на любые другие этажи в очереди.</small></td><td><pre><code class="hljs javascript">elevator.goToFloor(<span class="hljs-number">3</span>); <span class="hljs-comment">// Выполнит это после всего остального</span>
+elevator.goToFloor(<span class="hljs-number">2</span>, <span class="hljs-literal">true</span>); <span class="hljs-comment">// Выполнит это раньше всего</span></code></pre></td></tr>
+                    <tr><td>stop</td><td>function</td><td><small>Очищает очередь и остановает лифт, если он движется. Обратите внимание, что лифт, вероятно, не остановится на этаже, так что пассажиры не выйдут.</small></td><td><pre><code class="hljs">elevator.stop();</code></pre></td></tr>
+                    <tr><td>currentFloor</td><td>function</td><td><small>Получает номер этажа, на котором сейчас находится лифт.</small></td><td><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(elevator.currentFloor() === <span class="hljs-number">0</span>) {
+    <span class="hljs-comment">// Сделать что-то особенное ?</span>
+}</code></pre></td></tr>
+                    <tr><td>goingUpIndicator</td><td>function</td><td><small>Получает или задает индикатор движения вверх, который будет влиять на поведение пассажиров при остановке на этажах.
+</small></td><td><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(elevator.goingUpIndicator()) {
+    elevator.goingDownIndicator(<span class="hljs-literal">false</span>); <span class="hljs-comment">// Отключили индекатор "вниз"</span>
+}</code></pre></td></tr>
+                    <tr><td>goingDownIndicator</td><td>function</td><td><small>Получает или задает индикатор движения вниз, который будет влиять на поведение пассажиров при остановке на этажах.</small></td><td><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(elevator.goingDownIndicator()) {
+    elevator.goingUpIndicator(<span class="hljs-literal">false</span>); <span class="hljs-comment">// Отключили индекатор "вверх"</span>
+}</code></pre></td></tr>
+                    <tr><td>maxPassengerCount</td><td>function</td><td><small>Получает максимальное количество пассажиров, которые могут одновременно занимать лифт.</small></td><td><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(elevator.maxPassengerCount() &gt; <span class="hljs-number">5</span>) {
+    <span class="hljs-comment">// Используйте этот лифт для чего-то особенного, потому что он большой</span>
+}</code></pre></td></tr>
+                    <tr><td>loadFactor</td><td>function</td><td><small>Получает коэффициент загрузки лифта. 0 означает пустой, 1 означает полный. Варьируется в зависимости от веса пассажира.</small></td><td><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(elevator.loadFactor() &lt; <span class="hljs-number">0.4</span>) {
+    <span class="hljs-comment">// Может, воспользуемся лифтом, раз он еще не заполнен ?</span>
+}</code></pre></td></tr>
+                    <tr><td>destinationDirection</td><td>function</td><td><small>Получает направление, в котором лифт в настоящее время собирается двигаться. Может быть "вверх", "вниз" или "остановлено".</small></td></tr>
+                    <tr><td>destinationQueue</td><td>array</td><td><small>Текущая очередь инструкций, то есть номера этажей, на которые запланирован лифт. Обратите внимание, что необходимо вызвать checkDestinationQueue(), чтобы изменения вступили в силу немедленно.</small></td><td><pre><code class="hljs">elevator.destinationQueue = [];
+elevator.checkDestinationQueue();</code></pre></td></tr>
+                    <tr><td>checkDestinationQueue</td><td>function</td><td><small>Проверяет очередь на наличие новых инструкций. Обратите внимание, что это необходимо вызвать только при явном изменении очереди инструкций.</small></td><td><pre><code class="hljs">elevator.checkDestinationQueue();</code></pre></td></tr>
+                    <tr><td>getPressedFloors</td><td>function</td><td><small>Возвращает текущие нажатые номера этажей в виде массива.</small></td><td><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(elevator.getPressedFloors().length &gt; <span class="hljs-number">0</span>) {
+    <span class="hljs-comment">// Может быть, сначала пойти на какой-нибудь выбранный этаж ?</span>
+}</code></pre></td></tr>
+                </tbody>
+            </table>
+            <table class="doctable">
+                <thead><tr><th width="150">Событие</th><th width="280">Описание</th><th>Пример</th></tr></thead>
+                <tbody>
+                    <tr><td>idle</td><td><small>Срабатывает, когда лифт выполнил все свои задачи и ничего не делает.</small></td><td><pre><code class="hljs javascript">elevator.on(<span class="hljs-string">"idle"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{ ... });</code></pre></td></tr>
+                    <tr><td>floor_button_pressed</td><td><small>Срабатывает, когда пассажир нажал кнопку в лифте.</small></td><td><pre><code class="hljs javascript">elevator.on(<span class="hljs-string">"floor_button_pressed"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(floorNum)</span> </span>{
+    <span class="hljs-comment">// Может, сказать лифту, чтобы ехал на этот этаж ?</span>
+})</code></pre></td></tr>
+                    <tr><td>passing_floor</td><td><small>Срабатывает немного раньше, чем лифт опустится к этажу. Самое время решить, стоит ли останавливаться на этом этаже. Обратите внимание, что это событие не вызывается для конкретного этажа. Направление или "вверх" или "вниз".</small></td><td><pre><code class="hljs javascript">elevator.on(<span class="hljs-string">"passing_floor"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(floorNum, direction)</span> </span>{ ... });</code></pre></td></tr>
+                    <tr><td>stopped_at_floor</td><td><small>Срабатывает, когда лифт поднимается на этаж.</small></td><td><pre><code class="hljs javascript">elevator.on(<span class="hljs-string">"stopped_at_floor"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(floorNum)</span> </span>{
+    <span class="hljs-comment">// Maybe decide where to go next?</span>
+})</code></pre></td></tr>
+                </tbody>
+            </table>
+            <h3>Объекты этажа</h3>
+            <table class="doctable">
+                <thead><tr><th width="150">Свойство</th><th width="90">Тип</th><th width="190">Описание</th><th width="*">Пример</th></tr></thead>
+                <tbody>
+                <tr><td>floorNum</td><td>function</td><td><small>Возвращает номер этажа объекта floor.</small></td><td><pre><code class="hljs javascript"><span class="hljs-keyword">if</span>(floor.floorNum() &gt; <span class="hljs-number">3</span>) { ... }</code></pre></td></tr>
+                </tbody>
+            </table>
+            <table class="doctable">
+                <thead><tr><th width="150">Событие</th><th width="280">Описание</th><th>Пример</th></tr></thead>
+                <tbody>
+                    <tr><td>up_button_pressed</td><td><small>Срабатывает, когда кто-то нажал на кнопку на этаже. Обратите внимание, что пассажиры снова нажмут кнопку, если они не войдут в лифт.</small></td><td><pre><code class="hljs javascript">floor.on(<span class="hljs-string">"up_button_pressed"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-comment">// Может быть, скажите лифту идти на этот этаж ?</span>
+})</code></pre></td></tr>
+                    <tr><td>down_button_pressed</td><td><small>Срабатывает, когда кто-то нажал кнопку вниз на этаже. Обратите внимание, что пассажиры снова нажмут кнопку, если они не войдут в лифт.</small></td><td><pre><code class="hljs javascript">floor.on(<span class="hljs-string">"down_button_pressed"</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-comment">// Может быть, скажите лифту идти на этот этаж ?</span>
+})</code></pre></td></tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="footer">
+            <h4>Made by Magnus Wolffelt and contributors</h4>
+            <h4><a href="https://github.com/magwo/elevatorsaga">Source code</a> on GitHub</h4>
+        </div>
+    </div>
+</body>
+</html>
